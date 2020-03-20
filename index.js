@@ -25,9 +25,11 @@ const queue = new Bull('test', {
 (async () => {
     const repeatable = await queue.getRepeatableJobs();
             
-    repeatable.forEach(async (job) => {
-        await queue.removeRepeatableByKey(job.key);
-    });
+    await Promise.all(repeatable.map((job) => queue.removeRepeatableByKey(job.key)));
+    
+    // repeatable.forEach(async (job) => {
+    //     await queue.removeRepeatableByKey(job.key);
+    // });
 
     queue.process(proc);
     await queue.add({
